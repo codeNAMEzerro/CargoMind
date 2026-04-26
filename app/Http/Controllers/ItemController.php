@@ -14,10 +14,10 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Item::query();
+        $query = Item::where('is_active', true);
 
         if ($request->get('filter') === 'low_stock') {
-            $query->where('stock', '<=', 10)->where('is_active', true);
+            $query->where('stock', '<=', 10);
         }
 
         if ($search = $request->get('search')) {
@@ -123,9 +123,10 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        $item->update(['is_active' => false]);
-
+        // Gunakan deaktifasi saja untuk menghindari error constraint jika barang sudah pernah dipesan
         ActivityLog::log('delete_item', "Barang dinonaktifkan: {$item->name}", Item::class, $item->id);
+        
+        $item->update(['is_active' => false]);
 
         return redirect()->route('items.index')->with('success', 'Barang berhasil dinonaktifkan!');
     }

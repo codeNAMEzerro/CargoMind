@@ -32,10 +32,16 @@
                             <?php else: ?> <span class="badge badge-success"><?php echo e($item->stock); ?></span><?php endif; ?>
                         </td>
                         <td class="text-center">
-                            <a href="<?php echo e(route('items.edit', $item)); ?>" class="btn btn-sm btn-secondary"><i class="ri-edit-fill"></i></a>
-                            <form method="POST" action="<?php echo e(route('items.destroy', $item)); ?>" style="display:inline;" onsubmit="return confirm('Nonaktifkan barang ini?')"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                <button class="btn btn-sm btn-danger"><i class="ri-delete-bin-fill"></i></button>
-                            </form>
+                            <div class="flex gap-1 justify-center">
+                                <a href="<?php echo e(route('items.edit', $item)); ?>" class="btn btn-sm btn-secondary"><i class="ri-edit-fill"></i></a>
+                                <form method="POST" action="<?php echo e(route('items.destroy', $item->id)); ?>" style="display:inline;" id="delete-form-<?php echo e($item->id); ?>">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(document.getElementById('delete-form-<?php echo e($item->id); ?>'), 'Hapus Barang', 'Apakah Anda yakin ingin menghapus/menonaktifkan barang ini?')">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

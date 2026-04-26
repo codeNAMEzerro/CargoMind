@@ -110,3 +110,6 @@
 #51 D:/repo-proyekpemrog/CargoMind/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('D://repo-proyekp...')
 #52 {main}
 "} 
+[2026-04-26 12:45:48] local.INFO: Mencoba menghapus transaksi: CM202604260001  
+[2026-04-26 12:51:55] local.INFO: Mencoba menghapus transaksi: CM202604260002  
+[2026-04-26 12:51:57] local.INFO: Mencoba menghapus transaksi: CM202604260001  

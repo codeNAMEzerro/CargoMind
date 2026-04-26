@@ -92,6 +92,18 @@
 
             <div class="topbar-actions">
                 
+                <?php if(auth()->user()->isMaster()): ?>
+                <form method="POST" action="<?php echo e(route('master.toggle-god-mode')); ?>" style="display:inline;">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit" class="btn-icon <?php echo e(session('master_god_mode') ? 'active' : ''); ?>" 
+                            style="<?php echo e(session('master_god_mode') ? 'color: var(--accent-dark); background: rgba(52, 211, 153, 0.1);' : ''); ?>"
+                            title="God Mode: Edit Riwayat Transaksi">
+                        <i class="ri-shield-flash-fill"></i>
+                    </button>
+                </form>
+                <?php endif; ?>
+
+                
                 <button class="btn-icon" id="btn-toggle-font" onclick="toggleLargeFont()" title="Toggle Font Besar">
                     <i class="ri-font-size-2"></i>
                 </button>
@@ -157,6 +169,97 @@
         });
     </script>
     <?php echo $__env->yieldPushContent('scripts'); ?>
+    
+    <div id="custom-confirm-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 id="modal-title">Konfirmasi</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Batal</button>
+                <button type="button" id="modal-confirm-btn" class="btn btn-danger">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal-content.modal-sm {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-header h3 {
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+        }
+        .modal-body p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+
+    <script>
+        let currentFormToSubmit = null;
+
+        function confirmDelete(form, title = 'Hapus Data', message = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.') {
+            currentFormToSubmit = form;
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('custom-confirm-modal').style.display = 'flex';
+            
+            // Focus confirm button
+            setTimeout(() => {
+                document.getElementById('modal-confirm-btn').focus();
+            }, 100);
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('custom-confirm-modal').style.display = 'none';
+            currentFormToSubmit = null;
+        }
+
+        document.getElementById('modal-confirm-btn').addEventListener('click', function() {
+            if (currentFormToSubmit) {
+                currentFormToSubmit.submit();
+            }
+            closeConfirmModal();
+        });
+
+        // Close on ESC
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeConfirmModal();
+        });
+    </script>
 </body>
 </html>
 <?php /**PATH D:\repo-proyekpemrog\CargoMind\resources\views/layouts/app.blade.php ENDPATH**/ ?>

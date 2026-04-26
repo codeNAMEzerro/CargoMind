@@ -43,6 +43,11 @@ Route::middleware('auth')->group(function () {
 
     // Settings (Master only)
     Route::middleware('role:master')->group(function () {
+        Route::post('/toggle-god-mode', [TransactionController::class, 'toggleGodMode'])->name('master.toggle-god-mode');
+        Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
+        Route::put('/transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+        Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('/settings/users', [SettingController::class, 'createUser'])->name('settings.users.create');

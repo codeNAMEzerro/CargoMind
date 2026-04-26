@@ -35,6 +35,15 @@
         <div class="stat-icon orange"><i class="ri-discount-percent-fill"></i></div>
         <div><div class="stat-label">Total Diskon</div><div class="stat-value"><?php echo e(format_rupiah($totalDiscount)); ?></div></div>
     </div>
+    <?php if(auth()->user()->isMaster()): ?>
+    <div class="stat-card" style="border-color: var(--accent);">
+        <div class="stat-icon" style="background: var(--accent); color: white;"><i class="ri-hand-coin-fill"></i></div>
+        <div>
+            <div class="stat-label">Total Laba Bersih</div>
+            <div class="stat-value" style="color: var(--accent-dark);"><?php echo e(format_rupiah($totalProfit)); ?></div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <div class="grid-2">

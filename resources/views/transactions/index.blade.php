@@ -21,10 +21,10 @@
                 <thead>
                     <tr>
                         <th>Invoice</th>
-                        <th>Tanggal</th>
                         <th>Kasir</th>
+                        <th>Waktu</th>
                         <th class="text-right">Total</th>
-                        <th>Status</th>
+                        <th class="text-center">Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -32,13 +32,29 @@
                     @forelse($transactions as $t)
                     <tr>
                         <td><strong>{{ $t->invoice_number }}</strong></td>
-                        <td>{{ $t->created_at->format('d/m/Y H:i') }}</td>
                         <td>{{ $t->cashier->name ?? '-' }}</td>
+                        <td>{{ $t->created_at->format('d/m/Y H:i') }}</td>
                         <td class="text-right"><strong>{{ format_rupiah($t->total) }}</strong></td>
-                        <td><span class="badge {{ $t->status === 'completed' ? 'badge-success' : 'badge-danger' }}">{{ $t->status }}</span></td>
                         <td class="text-center">
-                            <a href="{{ route('transactions.receipt', $t->id) }}" class="btn btn-sm btn-secondary" title="Cetak Ulang Nota"><i class="ri-printer-fill"></i> Cetak Ulang</a>
-                            <a href="{{ route('transactions.pdf', $t->id) }}" class="btn btn-sm btn-secondary" title="Download PDF"><i class="ri-file-pdf-2-fill"></i></a>
+                            <span class="badge {{ $t->status === 'completed' ? 'badge-success' : 'badge-danger' }}">
+                                {{ $t->status === 'completed' ? 'Selesai' : 'Batal' }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex gap-1 justify-center">
+                                <a href="{{ route('transactions.receipt', $t) }}" class="btn btn-sm btn-secondary" title="Lihat Nota"><i class="ri-printer-fill"></i></a>
+                                
+                                @if(auth()->user()->isMaster() && session('master_god_mode'))
+                                <a href="{{ route('transactions.edit', $t) }}" class="btn btn-sm btn-primary" style="background: var(--accent-dark);" title="Edit (God Mode)"><i class="ri-edit-fill"></i></a>
+                                <form method="POST" action="{{ route('transactions.destroy', $t->id) }}" style="display:inline;" id="delete-tx-{{ $t->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(document.getElementById('delete-tx-{{ $t->id }}'), 'Hapus Transaksi', 'Hapus transaksi ini? Stok akan dikembalikan otomatis.')" title="Hapus (God Mode)">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @empty

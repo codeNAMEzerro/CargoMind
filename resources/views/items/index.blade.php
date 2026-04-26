@@ -33,10 +33,16 @@
                             @else <span class="badge badge-success">{{ $item->stock }}</span>@endif
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('items.edit', $item) }}" class="btn btn-sm btn-secondary"><i class="ri-edit-fill"></i></a>
-                            <form method="POST" action="{{ route('items.destroy', $item) }}" style="display:inline;" onsubmit="return confirm('Nonaktifkan barang ini?')">@csrf @method('DELETE')
-                                <button class="btn btn-sm btn-danger"><i class="ri-delete-bin-fill"></i></button>
-                            </form>
+                            <div class="flex gap-1 justify-center">
+                                <a href="{{ route('items.edit', $item) }}" class="btn btn-sm btn-secondary"><i class="ri-edit-fill"></i></a>
+                                <form method="POST" action="{{ route('items.destroy', $item->id) }}" style="display:inline;" id="delete-form-{{ $item->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(document.getElementById('delete-form-{{ $item->id }}'), 'Hapus Barang', 'Apakah Anda yakin ingin menghapus/menonaktifkan barang ini?')">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty

@@ -166,4 +166,129 @@ class TransactionController extends Controller
 
         return $pdf->download("invoice-{$transaction->invoice_number}.pdf");
     }
+
+    /**
+     * God Mode: Toggle edit mode for Master.
+     */
+    public function toggleGodMode()
+    {
+        $current = session('master_god_mode', false);
+        session(['master_god_mode' => !$current]);
+
+        $status = !$current ? 'aktif' : 'nonaktif';
+        return back()->with('success', "God Mode (Edit Mode) berhasil di{$status}kan!");
+    }
+
+    /**
+     * God Mode: Tampilkan form edit transaksi.
+     */
+    public function edit(Transaction $transaction)
+    {
+        if (!auth()->user()->isMaster() || !session('master_god_mode')) {
+            abort(403, 'God Mode harus aktif untuk mengedit transaksi.');
+        }
+
+        $transaction->load('details');
+        return view('transactions.edit', compact('transaction'));
+    }
+
+    /**
+     * God Mode: Update data transaksi & sesuaikan stok.
+     */
+    public function update(Request $request, Transaction $transaction)
+    {
+        if (!auth()->user()->isMaster() || !session('master_god_mode')) {
+            abort(403);
+        }
+
+        $request->validate([
+            'created_at' => 'required|date',
+            'discount_amount' => 'required|numeric|min:0',
+            'discount_note' => 'nullable|string|max:255',
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:transaction_details,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.discount' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $transaction) {
+                $subtotal = 0;
+
+                foreach ($request->items as $itemData) {
+                    $detail = TransactionDetail::findOrFail($itemData['id']);
+                    $item = Item::findOrFail($detail->item_id);
+
+                    // Sesuaikan stok: kembalikan stok lama, kurangi stok baru
+                    $diff = $detail->quantity - $itemData['quantity'];
+                    $item->increment('stock', $diff);
+
+                    $lineSubtotal = ($itemData['unit_price'] * $itemData['quantity']) - $itemData['discount'];
+                    
+                    $detail->update([
+                        'quantity' => $itemData['quantity'],
+                        'unit_price' => $itemData['unit_price'],
+                        'discount' => $itemData['discount'],
+                        'subtotal' => $lineSubtotal,
+                    ]);
+
+                    $subtotal += $lineSubtotal;
+                }
+
+                $total = $subtotal - $request->discount_amount;
+
+                $transaction->update([
+                    'created_at' => $request->created_at,
+                    'subtotal' => $subtotal,
+                    'discount_amount' => $request->discount_amount,
+                    'discount_note' => $request->discount_note,
+                    'total' => $total,
+                ]);
+
+                ActivityLog::log('update_transaction', "Master mengedit transaksi {$transaction->invoice_number} (God Mode)", Transaction::class, $transaction->id);
+            });
+
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil diperbarui via God Mode!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal update: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * God Mode: Hapus transaksi & kembalikan stok.
+     */
+    public function destroy(Transaction $transaction)
+    {
+        if (!auth()->user()->isMaster() || !session('master_god_mode')) {
+            abort(403);
+        }
+
+        try {
+            \Illuminate\Support\Facades\Log::info("Mencoba menghapus transaksi: " . $transaction->invoice_number);
+            
+            DB::transaction(function () use ($transaction) {
+                // Pastikan details ter-load
+                $transaction->load('details');
+                
+                // Kembalikan semua stok
+                foreach ($transaction->details as $detail) {
+                    $item = Item::find($detail->item_id);
+                    if ($item) {
+                        $item->increment('stock', $detail->quantity);
+                    }
+                }
+
+                // Log sebelum hapus
+                ActivityLog::log('delete_transaction', "Master menghapus transaksi {$transaction->invoice_number} (God Mode)", Transaction::class, $transaction->id);
+                
+                // Hapus transaksi (details akan ikut terhapus karena cascade di migration)
+                $transaction->delete();
+            });
+
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus & stok dikembalikan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal hapus: ' . $e->getMessage());
+        }
+    }
 }
