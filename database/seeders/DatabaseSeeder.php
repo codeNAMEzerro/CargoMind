@@ -61,14 +61,14 @@ class DatabaseSeeder extends Seeder
         // Sample Items
         // ============================================
         $items = [
-            ['name' => 'Baut 10mm', 'sku' => 'BT-010', 'price' => 2500, 'stock' => 500, 'rack_primary' => 'A-01', 'rack_secondary' => 'B-03'],
-            ['name' => 'Mur 8mm', 'sku' => 'MR-008', 'price' => 1500, 'stock' => 800, 'rack_primary' => 'A-01', 'rack_secondary' => null],
-            ['name' => 'Paku 5cm', 'sku' => 'PK-050', 'price' => 500, 'stock' => 2000, 'rack_primary' => 'A-02', 'rack_secondary' => 'C-01'],
-            ['name' => 'Kunci Inggris 12"', 'sku' => 'KI-012', 'price' => 85000, 'stock' => 30, 'rack_primary' => 'B-01', 'rack_secondary' => null],
-            ['name' => 'Obeng Set (+/-)', 'sku' => 'OB-SET', 'price' => 45000, 'stock' => 50, 'rack_primary' => 'B-02', 'rack_secondary' => 'D-01'],
-            ['name' => 'Cat Tembok Putih 5kg', 'sku' => 'CT-W05', 'price' => 125000, 'stock' => 25, 'rack_primary' => 'C-01', 'rack_secondary' => null],
-            ['name' => 'Selang Air 10m', 'sku' => 'SL-010', 'price' => 75000, 'stock' => 40, 'rack_primary' => 'C-02', 'rack_secondary' => 'A-03'],
-            ['name' => 'Gembok 50mm', 'sku' => 'GB-050', 'price' => 35000, 'stock' => 60, 'rack_primary' => 'D-01', 'rack_secondary' => null],
+            ['name' => 'Baut 10mm', 'sku' => 'BT-010', 'price' => 2500, 'purchase_price' => 1500, 'stock' => 500, 'rack_primary' => 'A-01', 'rack_secondary' => 'B-03'],
+            ['name' => 'Mur 8mm', 'sku' => 'MR-008', 'price' => 1500, 'purchase_price' => 800, 'stock' => 800, 'rack_primary' => 'A-01', 'rack_secondary' => null],
+            ['name' => 'Paku 5cm', 'sku' => 'PK-050', 'price' => 500, 'purchase_price' => 200, 'stock' => 2000, 'rack_primary' => 'A-02', 'rack_secondary' => 'C-01'],
+            ['name' => 'Kunci Inggris 12"', 'sku' => 'KI-012', 'price' => 85000, 'purchase_price' => 60000, 'stock' => 30, 'rack_primary' => 'B-01', 'rack_secondary' => null],
+            ['name' => 'Obeng Set (+/-)', 'sku' => 'OB-SET', 'price' => 45000, 'purchase_price' => 30000, 'stock' => 50, 'rack_primary' => 'B-02', 'rack_secondary' => 'D-01'],
+            ['name' => 'Cat Tembok Putih 5kg', 'sku' => 'CT-W05', 'price' => 125000, 'purchase_price' => 90000, 'stock' => 25, 'rack_primary' => 'C-01', 'rack_secondary' => null],
+            ['name' => 'Selang Air 10m', 'sku' => 'SL-010', 'price' => 75000, 'purchase_price' => 50000, 'stock' => 40, 'rack_primary' => 'C-02', 'rack_secondary' => 'A-03'],
+            ['name' => 'Gembok 50mm', 'sku' => 'GB-050', 'price' => 35000, 'purchase_price' => 20000, 'stock' => 60, 'rack_primary' => 'D-01', 'rack_secondary' => null],
         ];
 
         foreach ($items as $item) {

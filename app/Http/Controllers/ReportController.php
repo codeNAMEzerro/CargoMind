@@ -26,6 +26,14 @@ class ReportController extends Controller
         $totalRevenue = $transactions->sum('total');
         $totalTransactions = $transactions->count();
         $totalDiscount = $transactions->sum('discount_amount');
+        
+        $totalProfit = 0;
+        if (auth()->user()->isMaster()) {
+            $totalProfit = $transactions->sum(function($t) {
+                $cost = $t->details->sum(fn($d) => $d->purchase_price * $d->quantity);
+                return $t->total - $cost;
+            });
+        }
 
         // Activity logs (for Master)
         $activityLogs = ActivityLog::with('user')
@@ -38,6 +46,7 @@ class ReportController extends Controller
             'totalRevenue',
             'totalTransactions',
             'totalDiscount',
+            'totalProfit',
             'activityLogs',
             'startDate',
             'endDate'
@@ -67,25 +76,38 @@ class ReportController extends Controller
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
-        $callback = function () use ($transactions) {
+        $isMaster = auth()->user()->isMaster();
+
+        $callback = function () use ($transactions, $isMaster) {
             $file = fopen('php://output', 'w');
 
             // BOM for Excel UTF-8 compatibility
             fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
             // Header
-            fputcsv($file, ['No. Invoice', 'Tanggal', 'Kasir', 'Subtotal', 'Diskon', 'Total', 'Status']);
+            $headerFields = ['No. Invoice', 'Tanggal', 'Kasir', 'Subtotal', 'Diskon', 'Total'];
+            if ($isMaster) $headerFields[] = 'Laba Bersih';
+            $headerFields[] = 'Status';
+            
+            fputcsv($file, $headerFields);
 
             foreach ($transactions as $t) {
-                fputcsv($file, [
+                $row = [
                     $t->invoice_number,
                     $t->created_at->format('d/m/Y H:i'),
                     $t->cashier->name ?? '-',
                     $t->subtotal,
                     $t->discount_amount,
                     $t->total,
-                    $t->status,
-                ]);
+                ];
+
+                if ($isMaster) {
+                    $cost = $t->details->sum(fn($d) => $d->purchase_price * $d->quantity);
+                    $row[] = $t->total - $cost;
+                }
+
+                $row[] = $t->status;
+                fputcsv($file, $row);
             }
 
             fclose($file);

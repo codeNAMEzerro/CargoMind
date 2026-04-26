@@ -16,6 +16,10 @@ class ItemController extends Controller
     {
         $query = Item::query();
 
+        if ($request->get('filter') === 'low_stock') {
+            $query->where('stock', '<=', 10)->where('is_active', true);
+        }
+
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -48,11 +52,16 @@ class ItemController extends Controller
             'sku' => 'nullable|string|max:50|unique:items,sku',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'purchase_price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'rack_primary' => 'nullable|string|max:50',
             'rack_secondary' => 'nullable|string|max:50',
             'image' => 'nullable|image|max:5120', // Max 5MB
         ]);
+
+        if (!auth()->user()->isMaster()) {
+            $validated['purchase_price'] = 0;
+        }
 
         if ($request->hasFile('image')) {
             $validated['image'] = $this->processImage($request->file('image'));
@@ -83,11 +92,16 @@ class ItemController extends Controller
             'sku' => 'nullable|string|max:50|unique:items,sku,' . $item->id,
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'purchase_price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'rack_primary' => 'nullable|string|max:50',
             'rack_secondary' => 'nullable|string|max:50',
             'image' => 'nullable|image|max:5120',
         ]);
+
+        if (!auth()->user()->isMaster()) {
+            unset($validated['purchase_price']);
+        }
 
         if ($request->hasFile('image')) {
             // hapus foto doang

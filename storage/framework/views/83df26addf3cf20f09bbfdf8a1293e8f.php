@@ -21,10 +21,19 @@
                     <input type="text" name="sku" class="form-control" value="<?php echo e(old('sku', $item->sku)); ?>" placeholder="BT-010">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Harga *</label>
+                    <label class="form-label">Harga Jual *</label>
                     <input type="number" name="price" class="form-control" value="<?php echo e(old('price', $item->price)); ?>" required min="0">
                 </div>
             </div>
+
+            <?php if(auth()->user()->isMaster()): ?>
+            <div class="form-group">
+                <label class="form-label">Harga Beli * <small>(Hanya Master yang bisa melihat & mengisi)</small></label>
+                <input type="number" name="purchase_price" class="form-control" value="<?php echo e(old('purchase_price', $item->purchase_price)); ?>" required min="0" style="border-color: var(--accent);">
+            </div>
+            <?php else: ?>
+            <input type="hidden" name="purchase_price" value="<?php echo e($item->purchase_price ?? 0); ?>">
+            <?php endif; ?>
 
             <div class="form-group">
                 <label class="form-label">Stok *</label>

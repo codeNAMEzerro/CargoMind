@@ -60,6 +60,7 @@ class TransactionController extends Controller
                         'rack_location' => $item->rack_display,
                         'quantity' => $cartItem['quantity'],
                         'unit_price' => $item->price,
+                        'purchase_price' => $item->purchase_price,
                         'discount' => $lineDiscount,
                         'subtotal' => $lineSubtotal,
                     ];

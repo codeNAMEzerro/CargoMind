@@ -13,6 +13,7 @@ class TransactionDetail extends Model
         'rack_location',
         'quantity',
         'unit_price',
+        'purchase_price',
         'discount',
         'subtotal',
     ];
@@ -21,6 +22,7 @@ class TransactionDetail extends Model
     {
         return [
             'unit_price' => 'decimal:2',
+            'purchase_price' => 'decimal:2',
             'discount' => 'decimal:2',
             'subtotal' => 'decimal:2',
         ];

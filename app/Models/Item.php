@@ -14,6 +14,7 @@ class Item extends Model
         'sku',
         'description',
         'price',
+        'purchase_price',
         'stock',
         'rack_primary',
         'rack_secondary',
@@ -25,6 +26,7 @@ class Item extends Model
     {
         return [
             'price' => 'decimal:2',
+            'purchase_price' => 'decimal:2',
             'is_active' => 'boolean',
         ];
     }

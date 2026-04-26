@@ -36,6 +36,15 @@
         <div class="stat-icon orange"><i class="ri-discount-percent-fill"></i></div>
         <div><div class="stat-label">Total Diskon</div><div class="stat-value">{{ format_rupiah($totalDiscount) }}</div></div>
     </div>
+    @if(auth()->user()->isMaster())
+    <div class="stat-card" style="border-color: var(--accent);">
+        <div class="stat-icon" style="background: var(--accent); color: white;"><i class="ri-hand-coin-fill"></i></div>
+        <div>
+            <div class="stat-label">Total Laba Bersih</div>
+            <div class="stat-value" style="color: var(--accent-dark);">{{ format_rupiah($totalProfit) }}</div>
+        </div>
+    </div>
+    @endif
 </div>
 
 <div class="grid-2">

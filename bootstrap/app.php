@@ -14,7 +14,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'logout',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->respond(function ($response) {
+            if ($response->getStatusCode() === 419) {
+                return redirect()->route('login')->with('error', 'Sesi Anda telah berakhir, silakan login kembali.');
+            }
+            return $response;
+        });
     })->create();

@@ -16,7 +16,7 @@
         <div class="table-wrapper">
             <table class="table">
                 <thead>
-                    <tr><th>Nama</th><th>SKU</th><th>Lokasi Rak</th><th class="text-right">Harga</th><th class="text-center">Stok</th><th class="text-center">Aksi</th></tr>
+                    <tr><th>Nama</th><th>SKU</th><th>Lokasi Rak</th><th class="text-right">Harga Jual</th>@if(auth()->user()->isMaster())<th class="text-right" style="color:var(--accent-dark);">Harga Beli</th>@endif<th class="text-center">Stok</th><th class="text-center">Aksi</th></tr>
                 </thead>
                 <tbody>
                     @forelse($items as $item)
@@ -25,6 +25,9 @@
                         <td>{{ $item->sku ?? '-' }}</td>
                         <td><span class="badge badge-success">{{ $item->rack_display }}</span></td>
                         <td class="text-right">{{ format_rupiah($item->price) }}</td>
+                        @if(auth()->user()->isMaster())
+                        <td class="text-right" style="color:var(--accent-dark);">{{ format_rupiah($item->purchase_price) }}</td>
+                        @endif
                         <td class="text-center">
                             @if($item->stock <= 10)<span class="badge badge-danger">{{ $item->stock }}</span>
                             @else <span class="badge badge-success">{{ $item->stock }}</span>@endif
@@ -37,7 +40,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="text-center" style="padding:40px;color:var(--text-muted);">Belum ada barang</td></tr>
+                    <tr><td colspan="{{ auth()->user()->isMaster() ? 7 : 6 }}" class="text-center" style="padding:40px;color:var(--text-muted);">Belum ada barang</td></tr>
                     @endforelse
                 </tbody>
             </table>
