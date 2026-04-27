@@ -115,4 +115,117 @@ class ReportController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+    /**
+     * Halaman Analisa Omset & Keuntungan - Detail banget nggo mantau duit.
+     */
+    public function revenue(Request $request)
+    {
+        $period = $request->get('period', 'week'); // today, week, month, year
+        $isMaster = auth()->user()->isMaster();
+
+        $labels = [];
+        $revenues = [];
+        $profits = [];
+
+        $query = Transaction::where('status', 'completed')->with('details');
+
+        switch ($period) {
+            case 'today':
+                $query->whereDate('created_at', now());
+                $results = $query->get()->groupBy(function($t) {
+                    return $t->created_at->format('H');
+                });
+                
+                for ($i = 0; $i < 24; $i++) {
+                    $hour = str_pad($i, 2, '0', STR_PAD_LEFT);
+                    $labels[] = $hour . ':00';
+                    $trans = $results->get($hour, collect());
+                    $rev = $trans->sum('total');
+                    $revenues[] = $rev;
+                    if ($isMaster) {
+                        $profits[] = $trans->sum(function($t) {
+                            $cost = $t->details->sum(fn($d) => $d->purchase_price * $d->quantity);
+                            return $t->total - $cost;
+                        });
+                    }
+                }
+                break;
+
+            case 'week':
+                $query->where('created_at', '>=', now()->subDays(6)->startOfDay());
+                $results = $query->get()->groupBy(function($t) {
+                    return $t->created_at->format('Y-m-d');
+                });
+
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = now()->subDays($i)->format('Y-m-d');
+                    $labels[] = now()->subDays($i)->format('d M');
+                    $trans = $results->get($date, collect());
+                    $rev = $trans->sum('total');
+                    $revenues[] = $rev;
+                    if ($isMaster) {
+                        $profits[] = $trans->sum(function($t) {
+                            $cost = $t->details->sum(fn($d) => $d->purchase_price * $d->quantity);
+                            return $t->total - $cost;
+                        });
+                    }
+                }
+                break;
+
+            case 'month':
+                $query->where('created_at', '>=', now()->subDays(29)->startOfDay());
+                $results = $query->get()->groupBy(function($t) {
+                    return $t->created_at->format('Y-m-d');
+                });
+
+                for ($i = 29; $i >= 0; $i--) {
+                    $date = now()->subDays($i)->format('Y-m-d');
+                    $labels[] = now()->subDays($i)->format('d/m');
+                    $trans = $results->get($date, collect());
+                    $rev = $trans->sum('total');
+                    $revenues[] = $rev;
+                    if ($isMaster) {
+                        $profits[] = $trans->sum(function($t) {
+                            $cost = $t->details->sum(fn($d) => $d->purchase_price * $d->quantity);
+                            return $t->total - $cost;
+                        });
+                    }
+                }
+                break;
+
+            case 'year':
+                $query->where('created_at', '>=', now()->startOfYear());
+                $results = $query->get()->groupBy(function($t) {
+                    return $t->created_at->format('m');
+                });
+
+                for ($i = 1; $i <= 12; $i++) {
+                    $month = str_pad($i, 2, '0', STR_PAD_LEFT);
+                    $labels[] = \Carbon\Carbon::create(null, $i)->format('M');
+                    $trans = $results->get($month, collect());
+                    $rev = $trans->sum('total');
+                    $revenues[] = $rev;
+                    if ($isMaster) {
+                        $profits[] = $trans->sum(function($t) {
+                            $cost = $t->details->sum(fn($d) => $d->purchase_price * $d->quantity);
+                            return $t->total - $cost;
+                        });
+                    }
+                }
+                break;
+        }
+
+        $totalRevenue = array_sum($revenues);
+        $totalProfit = array_sum($profits);
+
+        return view('reports.revenue', compact(
+            'labels',
+            'revenues',
+            'profits',
+            'totalRevenue',
+            'totalProfit',
+            'period',
+            'isMaster'
+        ));
+    }
 }

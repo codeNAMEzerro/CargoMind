@@ -35,6 +35,63 @@ class ItemController extends Controller
     }
 
     /**
+     * Halaman khusus cek inventory - Visual grid mode.
+     */
+    public function inventory(Request $request)
+    {
+        $query = Item::where('is_active', true);
+
+        if ($request->get('filter') === 'low_stock') {
+            $query->where('stock', '<=', 10);
+        }
+
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        $items = $query->orderBy('name')->paginate(24);
+
+        return view('items.inventory', compact('items'));
+    }
+
+    /**
+     * Get detail barang nggo modal - Balikke JSON.
+     */
+    public function show(Item $item)
+    {
+        if (!auth()->user()->hasRole('master') && !auth()->user()->hasRole('manager')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get last sold date
+        $lastTransaction = \App\Models\TransactionDetail::where('item_id', $item->id)
+            ->with('transaction')
+            ->latest()
+            ->first();
+
+        // Get sales data for last 30 days
+        $salesData = \App\Models\TransactionDetail::where('item_id', $item->id)
+            ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
+            ->where('transactions.created_at', '>=', now()->subDays(30))
+            ->selectRaw('DATE(transactions.created_at) as date, SUM(transaction_details.quantity) as total_qty')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        return response()->json([
+            'item' => $item,
+            'last_sold' => $lastTransaction ? $lastTransaction->transaction->created_at->format('d M Y H:i') : 'Belum pernah laku',
+            'sales_chart' => $salesData,
+            'is_master' => auth()->user()->isMaster(),
+            'formatted_price' => format_rupiah($item->price),
+            'formatted_purchase_price' => format_rupiah($item->purchase_price),
+        ]);
+    }
+
+    /**
      * Nampilke form nggo nambah barang anyar - Ben gampang ngisike.
      */
     public function create()

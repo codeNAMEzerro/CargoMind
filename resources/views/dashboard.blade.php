@@ -11,7 +11,7 @@
             <div class="stat-value">{{ $todayTransactions }}</div>
         </div>
     </a>
-    <a href="{{ route('transactions.index', ['date' => date('Y-m-d')]) }}" class="stat-card">
+    <a href="{{ auth()->user()->hasRole('master') || auth()->user()->hasRole('manager') ? route('reports.revenue', ['period' => 'today']) : '#' }}" class="stat-card">
         <div class="stat-icon blue"><i class="ri-money-dollar-circle-fill"></i></div>
         <div>
             <div class="stat-label">Omset Hari Ini</div>
@@ -19,13 +19,13 @@
         </div>
     </a>
     @if(auth()->user()->isMaster())
-    <div class="stat-card" style="border-color: var(--accent);">
+    <a href="{{ route('reports.revenue', ['period' => 'today']) }}" class="stat-card" style="border-color: var(--accent);">
         <div class="stat-icon" style="background: var(--accent); color: white;"><i class="ri-hand-coin-fill"></i></div>
         <div>
             <div class="stat-label">Untung Bersih Hari Ini</div>
             <div class="stat-value" style="color: var(--accent-dark);">{{ format_rupiah($todayProfit) }}</div>
         </div>
-    </div>
+    </a>
     @endif
     <a href="{{ route('items.index') }}" class="stat-card">
         <div class="stat-icon orange"><i class="ri-archive-2-fill"></i></div>

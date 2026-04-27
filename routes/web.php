@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Items (All authenticated users)
+    Route::get('/inventory', [ItemController::class, 'inventory'])->name('inventory.index');
+    Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
     Route::resource('items', ItemController::class)->except(['show']);
 
     // Transactions / POS (Karyawan + Manager + Master)
@@ -38,6 +40,7 @@ Route::middleware('auth')->group(function () {
     // Reports (Manager + Master)
     Route::middleware('role:master,manager')->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/revenue', [ReportController::class, 'revenue'])->name('reports.revenue');
         Route::get('/reports/export', [ReportController::class, 'exportExcel'])->name('reports.export');
     });
 

@@ -39,6 +39,11 @@
                 <span>Barang</span>
             </a>
 
+            <a href="{{ route('inventory.index') }}" class="nav-link {{ request()->routeIs('inventory.*') ? 'active' : '' }}" id="nav-inventory">
+                <i class="ri-archive-fill"></i>
+                <span>Cek Inventory</span>
+            </a>
+
             <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}" id="nav-transactions">
                 <i class="ri-file-list-3-fill"></i>
                 <span>Riwayat Transaksi</span>
