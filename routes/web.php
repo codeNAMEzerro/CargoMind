@@ -27,8 +27,8 @@ Route::middleware('auth')->group(function () {
 
     // Items (All authenticated users)
     Route::get('/inventory', [ItemController::class, 'inventory'])->name('inventory.index');
-    Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
     Route::resource('items', ItemController::class)->except(['show']);
+    Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
 
     // Transactions / POS (Karyawan + Manager + Master)
     Route::get('/pos', [TransactionController::class, 'create'])->name('pos');

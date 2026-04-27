@@ -1,50 +1,49 @@
-@extends('layouts.app')
-@section('title', 'Dashboard')
+<?php $__env->startSection('title', 'Dashboard'); ?>
 
-@section('content')
-{{-- Stats Grid --}}
+<?php $__env->startSection('content'); ?>
+
 <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-    <a href="{{ route('transactions.index', ['date' => date('Y-m-d')]) }}" class="stat-card">
+    <a href="<?php echo e(route('transactions.index', ['date' => date('Y-m-d')])); ?>" class="stat-card">
         <div class="stat-icon green"><i class="ri-shopping-cart-2-fill"></i></div>
         <div>
             <div class="stat-label">Transaksi Hari Ini</div>
-            <div class="stat-value">{{ $todayTransactions }}</div>
+            <div class="stat-value"><?php echo e($todayTransactions); ?></div>
         </div>
     </a>
-    <a href="{{ auth()->user()->hasRole('master') || auth()->user()->hasRole('manager') ? route('reports.revenue', ['period' => 'today']) : '#' }}" class="stat-card">
+    <a href="<?php echo e(auth()->user()->hasRole('master') || auth()->user()->hasRole('manager') ? route('reports.revenue', ['period' => 'today']) : '#'); ?>" class="stat-card">
         <div class="stat-icon blue"><i class="ri-money-dollar-circle-fill"></i></div>
         <div>
             <div class="stat-label">Transaksi Hari Ini</div>
-            <div class="stat-value">{{ format_rupiah($todayRevenue) }}</div>
+            <div class="stat-value"><?php echo e(format_rupiah($todayRevenue)); ?></div>
         </div>
     </a>
-    @if(auth()->user()->isMaster())
-    <a href="{{ route('reports.revenue', ['period' => 'today']) }}" class="stat-card" style="border-color: var(--accent);">
+    <?php if(auth()->user()->isMaster()): ?>
+    <a href="<?php echo e(route('reports.revenue', ['period' => 'today'])); ?>" class="stat-card" style="border-color: var(--accent);">
         <div class="stat-icon" style="background: var(--accent); color: white;"><i class="ri-hand-coin-fill"></i></div>
         <div>
             <div class="stat-label">Untung Bersih Hari Ini</div>
-            <div class="stat-value" style="color: var(--accent-dark);">{{ format_rupiah($todayProfit) }}</div>
+            <div class="stat-value" style="color: var(--accent-dark);"><?php echo e(format_rupiah($todayProfit)); ?></div>
         </div>
     </a>
-    @endif
-    <a href="{{ route('items.index') }}" class="stat-card">
+    <?php endif; ?>
+    <a href="<?php echo e(route('items.index')); ?>" class="stat-card">
         <div class="stat-icon orange"><i class="ri-archive-2-fill"></i></div>
         <div>
             <div class="stat-label">Total Barang Aktif</div>
-            <div class="stat-value">{{ $totalItems }}</div>
+            <div class="stat-value"><?php echo e($totalItems); ?></div>
         </div>
     </a>
-    <a href="{{ route('items.index', ['filter' => 'low_stock']) }}" class="stat-card">
+    <a href="<?php echo e(route('items.index', ['filter' => 'low_stock'])); ?>" class="stat-card">
         <div class="stat-icon red"><i class="ri-error-warning-fill"></i></div>
         <div>
             <div class="stat-label">Stok Menipis</div>
-            <div class="stat-value">{{ $lowStockItems }}</div>
+            <div class="stat-value"><?php echo e($lowStockItems); ?></div>
         </div>
     </a>
 </div>
 
-{{-- Charts Section (Master Only) --}}
-@if(auth()->user()->isMaster())
+
+<?php if(auth()->user()->isMaster()): ?>
 <div class="card mb-3">
     <div class="card-header">
         <div>
@@ -52,9 +51,9 @@
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Pantau performa tokomu secara berkala</p>
         </div>
         <div class="flex gap-1">
-            <a href="?period=daily" class="btn btn-sm {{ $period == 'daily' ? 'btn-primary' : 'btn-secondary' }}">Harian</a>
-            <a href="?period=weekly" class="btn btn-sm {{ $period == 'weekly' ? 'btn-primary' : 'btn-secondary' }}">Mingguan</a>
-            <a href="?period=monthly" class="btn btn-sm {{ $period == 'monthly' ? 'btn-primary' : 'btn-secondary' }}">Bulanan</a>
+            <a href="?period=daily" class="btn btn-sm <?php echo e($period == 'daily' ? 'btn-primary' : 'btn-secondary'); ?>">Harian</a>
+            <a href="?period=weekly" class="btn btn-sm <?php echo e($period == 'weekly' ? 'btn-primary' : 'btn-secondary'); ?>">Mingguan</a>
+            <a href="?period=monthly" class="btn btn-sm <?php echo e($period == 'monthly' ? 'btn-primary' : 'btn-secondary'); ?>">Bulanan</a>
         </div>
     </div>
     <div class="card-body">
@@ -63,14 +62,14 @@
         </div>
     </div>
 </div>
-@endif
+<?php endif; ?>
 
 <div class="grid-2">
-    {{-- Recent Transactions --}}
+    
     <div class="card">
         <div class="card-header">
             <h2><i class="ri-file-list-3-fill"></i> Transaksi Terakhir</h2>
-            <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-secondary">Lihat Semua</a>
+            <a href="<?php echo e(route('transactions.index')); ?>" class="btn btn-sm btn-secondary">Lihat Semua</a>
         </div>
         <div class="table-wrapper">
             <table class="table">
@@ -83,62 +82,62 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($recentTransactions as $t)
+                    <?php $__empty_1 = true; $__currentLoopData = $recentTransactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td><strong>{{ $t->invoice_number }}</strong></td>
-                        <td>{{ $t->cashier->name ?? '-' }}</td>
-                        <td class="text-right"><strong>{{ format_rupiah($t->total) }}</strong></td>
-                        <td>{{ $t->created_at->format('H:i') }}</td>
+                        <td><strong><?php echo e($t->invoice_number); ?></strong></td>
+                        <td><?php echo e($t->cashier->name ?? '-'); ?></td>
+                        <td class="text-right"><strong><?php echo e(format_rupiah($t->total)); ?></strong></td>
+                        <td><?php echo e($t->created_at->format('H:i')); ?></td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr><td colspan="4" class="text-center" style="padding:30px;color:var(--text-muted);">Belum ada transaksi hari ini</td></tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 
-    {{-- Activity Logs (Master only) --}}
-    @if(auth()->user()->isMaster())
+    
+    <?php if(auth()->user()->isMaster()): ?>
     <div class="card">
         <div class="card-header">
             <h2><i class="ri-history-fill"></i> Log Aktivitas</h2>
-            <a href="{{ route('reports.index') }}" class="btn btn-sm btn-secondary">Lihat Semua</a>
+            <a href="<?php echo e(route('reports.index')); ?>" class="btn btn-sm btn-secondary">Lihat Semua</a>
         </div>
         <div class="card-body" style="max-height:400px;overflow-y:auto;">
-            @forelse($recentLogs as $log)
+            <?php $__empty_1 = true; $__currentLoopData = $recentLogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <div style="padding:10px 0;border-bottom:1px solid var(--border-light);">
                 <div style="display:flex;justify-content:space-between;">
-                    <strong style="font-size:0.85rem;">{{ $log->user->name ?? 'System' }}</strong>
-                    <small style="color:var(--text-muted);">{{ $log->created_at->format('d/m H:i') }}</small>
+                    <strong style="font-size:0.85rem;"><?php echo e($log->user->name ?? 'System'); ?></strong>
+                    <small style="color:var(--text-muted);"><?php echo e($log->created_at->format('d/m H:i')); ?></small>
                 </div>
-                <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:2px;">{{ $log->description }}</p>
+                <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:2px;"><?php echo e($log->description); ?></p>
             </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <p style="text-align:center;color:var(--text-muted);padding:20px;">Belum ada aktivitas</p>
-            @endforelse
+            <?php endif; ?>
         </div>
     </div>
-    @else
+    <?php else: ?>
     <div class="card">
         <div class="card-header"><h2><i class="ri-lightbulb-fill"></i> Info</h2></div>
         <div class="card-body">
             <p style="color:var(--text-secondary);">Selamat datang di <strong>CargoMind</strong>! Gunakan menu di samping untuk mulai bekerja.</p>
             <div class="mt-2">
-                <a href="{{ route('pos') }}" class="btn btn-primary"><i class="ri-shopping-cart-2-fill"></i> Buka Kasir</a>
+                <a href="<?php echo e(route('pos')); ?>" class="btn btn-primary"><i class="ri-shopping-cart-2-fill"></i> Buka Kasir</a>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    @if(auth()->user()->isMaster())
+    <?php if(auth()->user()->isMaster()): ?>
     const ctx = document.getElementById('revenueChart').getContext('2d');
-    const chartData = @json($chartData);
+    const chartData = <?php echo json_encode($chartData, 15, 512) ?>;
     
     const labels = chartData.map(item => item.date);
     const revenues = chartData.map(item => item.revenue);
@@ -233,6 +232,8 @@
             }
         }
     });
-    @endif
+    <?php endif; ?>
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/ILHAM-sama/Documents/CargoMind/CargoMind/resources/views/dashboard.blade.php ENDPATH**/ ?>

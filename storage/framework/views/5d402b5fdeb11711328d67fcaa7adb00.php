@@ -13,7 +13,7 @@
     <a href="<?php echo e(auth()->user()->hasRole('master') || auth()->user()->hasRole('manager') ? route('reports.revenue', ['period' => 'today']) : '#'); ?>" class="stat-card">
         <div class="stat-icon blue"><i class="ri-money-dollar-circle-fill"></i></div>
         <div>
-            <div class="stat-label">Omset Hari Ini</div>
+            <div class="stat-label">Transaksi Hari Ini</div>
             <div class="stat-value"><?php echo e(format_rupiah($todayRevenue)); ?></div>
         </div>
     </a>

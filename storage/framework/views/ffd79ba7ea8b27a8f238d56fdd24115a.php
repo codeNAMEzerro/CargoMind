@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CargoMind') - {{ setting('store_name', 'CargoMind') }}</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'CargoMind'); ?> - <?php echo e(setting('store_name', 'CargoMind')); ?></title>
     <meta name="description" content="CargoMind - Sistem Manajemen Toko & Gudang">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    @stack('styles')
+    <link rel="stylesheet" href="<?php echo e(asset('css/app.css')); ?>">
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
-<body class="{{ session('large_font', false) ? 'large-font' : '' }}">
-    {{-- ============================== --}}
-    {{-- SIDEBAR NAVIGATION --}}
-    {{-- ============================== --}}
+<body class="<?php echo e(session('large_font', false) ? 'large-font' : ''); ?>">
+    
+    
+    
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <i class="ri-box-3-fill"></i>
@@ -24,44 +24,44 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" id="nav-dashboard">
+            <a href="<?php echo e(route('dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>" id="nav-dashboard">
                 <i class="ri-dashboard-3-fill"></i>
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('pos') }}" class="nav-link {{ request()->routeIs('pos') ? 'active' : '' }}" id="nav-pos">
+            <a href="<?php echo e(route('pos')); ?>" class="nav-link <?php echo e(request()->routeIs('pos') ? 'active' : ''); ?>" id="nav-pos">
                 <i class="ri-shopping-cart-2-fill"></i>
                 <span>Kasir (POS)</span>
             </a>
 
-            <a href="{{ route('items.index') }}" class="nav-link {{ request()->routeIs('items.*') ? 'active' : '' }}" id="nav-items">
+            <a href="<?php echo e(route('items.index')); ?>" class="nav-link <?php echo e(request()->routeIs('items.*') ? 'active' : ''); ?>" id="nav-items">
                 <i class="ri-archive-2-fill"></i>
                 <span>Barang</span>
             </a>
 
-            <a href="{{ route('inventory.index') }}" class="nav-link {{ request()->routeIs('inventory.*') ? 'active' : '' }}" id="nav-inventory">
+            <a href="<?php echo e(route('inventory.index')); ?>" class="nav-link <?php echo e(request()->routeIs('inventory.*') ? 'active' : ''); ?>" id="nav-inventory">
                 <i class="ri-archive-fill"></i>
                 <span>Cek Inventory</span>
             </a>
 
-            <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}" id="nav-transactions">
+            <a href="<?php echo e(route('transactions.index')); ?>" class="nav-link <?php echo e(request()->routeIs('transactions.*') ? 'active' : ''); ?>" id="nav-transactions">
                 <i class="ri-file-list-3-fill"></i>
                 <span>Riwayat Transaksi</span>
             </a>
 
-            @if(auth()->user()->hasRole('master') || auth()->user()->hasRole('manager'))
-            <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" id="nav-reports">
+            <?php if(auth()->user()->hasRole('master') || auth()->user()->hasRole('manager')): ?>
+            <a href="<?php echo e(route('reports.index')); ?>" class="nav-link <?php echo e(request()->routeIs('reports.*') ? 'active' : ''); ?>" id="nav-reports">
                 <i class="ri-bar-chart-box-fill"></i>
                 <span>Laporan</span>
             </a>
-            @endif
+            <?php endif; ?>
 
-            @if(auth()->user()->hasRole('master'))
-            <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" id="nav-settings">
+            <?php if(auth()->user()->hasRole('master')): ?>
+            <a href="<?php echo e(route('settings.index')); ?>" class="nav-link <?php echo e(request()->routeIs('settings.*') ? 'active' : ''); ?>" id="nav-settings">
                 <i class="ri-settings-4-fill"></i>
                 <span>Pengaturan</span>
             </a>
-            @endif
+            <?php endif; ?>
         </nav>
 
         <div class="sidebar-footer">
@@ -70,12 +70,12 @@
                     <i class="ri-user-3-fill"></i>
                 </div>
                 <div class="user-details">
-                    <span class="user-name">{{ auth()->user()->name }}</span>
-                    <span class="user-role">{{ ucfirst(auth()->user()->role) }}</span>
+                    <span class="user-name"><?php echo e(auth()->user()->name); ?></span>
+                    <span class="user-role"><?php echo e(ucfirst(auth()->user()->role)); ?></span>
                 </div>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
+            <form method="POST" action="<?php echo e(route('logout')); ?>">
+                <?php echo csrf_field(); ?>
                 <button type="submit" class="btn-logout" id="btn-logout" title="Keluar">
                     <i class="ri-logout-box-r-fill"></i>
                 </button>
@@ -83,32 +83,32 @@
         </div>
     </aside>
 
-    {{-- ============================== --}}
-    {{-- MAIN CONTENT --}}
-    {{-- ============================== --}}
+    
+    
+    
     <main class="main-content">
-        {{-- Top Bar --}}
+        
     <header class="topbar">
         <button class="btn-toggle-sidebar" id="btn-toggle-sidebar" onclick="toggleSidebar()">
             <i class="ri-menu-2-fill"></i>
         </button>
 
-        <h1 class="page-title">@yield('title', 'Dashboard')</h1>
+        <h1 class="page-title"><?php echo $__env->yieldContent('title', 'Dashboard'); ?></h1>
 
         <div class="topbar-actions">
-            {{-- Master God Mode Toggle --}}
-            @if(auth()->user()->isMaster())
-            <form method="POST" action="{{ route('master.toggle-god-mode') }}" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn-icon {{ session('master_god_mode') ? 'active' : '' }}" 
-                        style="{{ session('master_god_mode') ? 'color: var(--accent-dark); background: rgba(52, 211, 153, 0.1);' : '' }}"
+            
+            <?php if(auth()->user()->isMaster()): ?>
+            <form method="POST" action="<?php echo e(route('master.toggle-god-mode')); ?>" style="display:inline;">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="btn-icon <?php echo e(session('master_god_mode') ? 'active' : ''); ?>" 
+                        style="<?php echo e(session('master_god_mode') ? 'color: var(--accent-dark); background: rgba(52, 211, 153, 0.1);' : ''); ?>"
                         title="God Mode: Edit Riwayat Transaksi">
                     <i class="ri-shield-flash-fill"></i>
                 </button>
             </form>
-            @endif
+            <?php endif; ?>
 
-            {{-- Large Font Toggle --}}
+            
             <button class="btn-icon" id="btn-toggle-font" onclick="toggleLargeFont()" title="Toggle Font Besar">
                 <i class="ri-font-size-2"></i>
             </button>
@@ -117,38 +117,38 @@
 
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    {{-- Flash Messages --}}
-    @if(session('success'))
+    
+    <?php if(session('success')): ?>
     <div class="alert alert-success" id="alert-success">
         <i class="ri-checkbox-circle-fill"></i>
-        <span>{{ session('success') }}</span>
+        <span><?php echo e(session('success')); ?></span>
         <button class="alert-close" onclick="this.parentElement.remove()"><i class="ri-close-fill"></i></button>
     </div>
-    @endif
+    <?php endif; ?>
 
-    @if(session('error'))
+    <?php if(session('error')): ?>
     <div class="alert alert-error" id="alert-error">
         <i class="ri-error-warning-fill"></i>
-        <span>{{ session('error') }}</span>
+        <span><?php echo e(session('error')); ?></span>
         <button class="alert-close" onclick="this.parentElement.remove()"><i class="ri-close-fill"></i></button>
     </div>
-    @endif
+    <?php endif; ?>
 
-    @if($errors->any())
+    <?php if($errors->any()): ?>
     <div class="alert alert-error" id="alert-validation">
         <i class="ri-error-warning-fill"></i>
         <div>
-            @foreach($errors->all() as $error)
-            <p>{{ $error }}</p>
-            @endforeach
+            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <p><?php echo e($error); ?></p>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
         <button class="alert-close" onclick="this.parentElement.remove()"><i class="ri-close-fill"></i></button>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Page Content --}}
+    
     <div class="content-wrapper">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </div>
 </main>
 
@@ -184,8 +184,8 @@
             }, 5000);
         });
     </script>
-    @stack('scripts')
-    {{-- Custom Confirm Modal --}}
+    <?php echo $__env->yieldPushContent('scripts'); ?>
+    
     <div id="custom-confirm-modal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-sm">
             <div class="modal-header">
@@ -278,3 +278,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH /Users/ILHAM-sama/Documents/CargoMind/CargoMind/resources/views/layouts/app.blade.php ENDPATH**/ ?>

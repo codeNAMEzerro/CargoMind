@@ -1,26 +1,25 @@
-@extends('layouts.app')
-@section('title', 'Kasir (POS)')
+<?php $__env->startSection('title', 'Kasir (POS)'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="pos-layout">
-    {{-- Items Grid --}}
+    
     <div class="pos-items">
         <div class="search-bar">
             <input type="text" class="form-control" id="pos-search" placeholder="Cari barang..." oninput="filterItems()">
         </div>
         <div class="items-grid" id="items-grid">
-            @foreach($items as $item)
-            <div class="item-card" onclick="addToCart({{ $item->id }}, '{{ addslashes($item->name) }}', {{ $item->price }}, {{ $item->stock }}, '{{ $item->rack_display }}')" data-name="{{ strtolower($item->name) }}" data-sku="{{ strtolower($item->sku ?? '') }}">
-                <div class="item-card-name">{{ $item->name }}</div>
-                <div class="item-card-rack"><i class="ri-map-pin-2-fill"></i> {{ $item->rack_display }}</div>
-                <div class="item-card-price">{{ format_rupiah($item->price) }}</div>
-                <div class="item-card-stock">Stok: {{ $item->stock }}</div>
+            <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="item-card" onclick="addToCart(<?php echo e($item->id); ?>, '<?php echo e(addslashes($item->name)); ?>', <?php echo e($item->price); ?>, <?php echo e($item->stock); ?>, '<?php echo e($item->rack_display); ?>')" data-name="<?php echo e(strtolower($item->name)); ?>" data-sku="<?php echo e(strtolower($item->sku ?? '')); ?>">
+                <div class="item-card-name"><?php echo e($item->name); ?></div>
+                <div class="item-card-rack"><i class="ri-map-pin-2-fill"></i> <?php echo e($item->rack_display); ?></div>
+                <div class="item-card-price"><?php echo e(format_rupiah($item->price)); ?></div>
+                <div class="item-card-stock">Stok: <?php echo e($item->stock); ?></div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 
-    {{-- Cart --}}
+    
     <div class="pos-cart" id="pos-cart">
         <div class="pos-cart-header" onclick="toggleCart()">
             <h3><i class="ri-shopping-cart-2-fill"></i> Keranjang <span id="cart-count" style="background:var(--primary);color:white;padding:2px 8px;border-radius:12px;font-size:0.75rem;margin-left:4px;">0</span></h3>
@@ -52,7 +51,7 @@
     </div>
 </div>
 
-{{-- Payment Modal --}}
+
 <div class="modal-overlay" id="pay-modal">
     <div class="modal">
         <div class="modal-header">
@@ -90,7 +89,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 let cart = [];
 
@@ -201,9 +200,9 @@ function processPayment() {
     const btn = document.getElementById('btn-confirm-pay');
     btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-fill"></i> Memproses...';
 
-    fetch('{{ route("transactions.store") }}', {
+    fetch('<?php echo e(route("transactions.store")); ?>', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
         body: JSON.stringify({
             items: cart.map(i => ({ id: i.id, quantity: i.quantity, discount: i.discount })),
             discount_amount: globalDiscount,
@@ -219,5 +218,7 @@ function processPayment() {
     .catch(() => { alert('Terjadi kesalahan!'); btn.disabled = false; btn.innerHTML = '<i class="ri-checkbox-circle-fill"></i> Konfirmasi Bayar'; });
 }
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/ILHAM-sama/Documents/CargoMind/CargoMind/resources/views/transactions/create.blade.php ENDPATH**/ ?>
