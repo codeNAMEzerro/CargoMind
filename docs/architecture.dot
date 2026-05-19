@@ -1,0 +1,39 @@
+digraph G {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=box, style=filled, fillcolor="#F5F5F5"]
+    edge [fontname="Helvetica,Arial,sans-serif"]
+    rankdir=TB;
+
+    subgraph cluster_client {
+        label = "Client / Browser";
+        style=dashed;
+        color=blue;
+        UI [label="Blade Templates + JS", fillcolor="#E3F2FD"];
+    }
+
+    subgraph cluster_server {
+        label = "Application Server (Laravel)";
+        style=dashed;
+        color=green;
+        Router [label="Router / Web Routes"];
+        Middleware [label="Auth & Role Middleware"];
+        Controller [label="Controllers"];
+        Model [label="Eloquent Models"];
+    }
+
+    subgraph cluster_db {
+        label = "Database Layer";
+        style=dashed;
+        color=red;
+        DB [label="Project Database\n(SQLite/MySQL)", shape=cylinder, fillcolor="#FFEB3B"];
+    }
+
+    UI -> Router [label="HTTP Requests"];
+    Router -> Middleware [label="Validates Access"];
+    Middleware -> Controller [label="Passes to"];
+    Controller -> Model [label="Queries"];
+    Model -> DB [label="CRUD Operations"];
+    DB -> Model [label="Results"];
+    Model -> Controller [label="Data"];
+    Controller -> UI [label="Renders HTML/JSON"];
+}
