@@ -92,97 +92,15 @@ CargoMind dibangun menggunakan arsitektur **Client-Server Monolitik** berlandask
 - **Server Aplikasi (Controller):** Menggunakan Laravel. Terdiri dari *Router* (`routes/web.php`) yang meneruskan setiap *request* HTTP (GET/POST/PUT/DELETE) ke *Controller* yang bersangkutan setelah melewati filter keamanan *Middleware* (*Auth* dan *CheckRole*).
 - **Lapisan Data (Model):** Menggunakan **Eloquent ORM** dari Laravel untuk menjalankan kueri yang aman ke RDBMS (SQLite/MySQL/PostgreSQL).
 
-```mermaid
-graph TD
-    UI[Client Browser / View] -- HTTP Requests --> Router
-    Router[Laravel Router] -- Validasi Akses --> Middleware
-    Middleware[Auth & CheckRole Middleware] -- Forward --> Controller
-    Controller[Controllers / Logika Bisnis] -- ORM Query --> Model
-    Model[Eloquent Models] -- CRUD Data --> DB[(Database)]
-    DB -- Hasil Query --> Model
-    Model -- Return Data --> Controller
-    Controller -- Render Blade Template --> UI
-```
+![Arsitektur Sistem](architecture.png)
 
 ### b. Activity Diagram (Alur Transaksi POS)
 
-```mermaid
-stateDiagram-v2
-    [*] --> BukaPOS : Aktor Memilih Menu POS
-    BukaPOS --> CariItem : Cari dan Pilih Barang
-    CariItem --> CekStok : Tambahkan Ke Keranjang
-    state CekStok <<choice>>
-    CekStok --> CariItem : [Stok Habis / Gagal]
-    CekStok --> MasukkanDiskon : [Stok Tersedia]
-    MasukkanDiskon --> InputPembayaran : Kalkulasi Subtotal & Diskon
-    InputPembayaran --> Finalisasi : Masukkan Uang Bayar
-    state Finalisasi <<choice>>
-    Finalisasi --> InputPembayaran : [Uang Kurang]
-    Finalisasi --> SimpanDatabase : [Uang Cukup]
-    SimpanDatabase --> KurangiStok : DB Transaction Begin
-    KurangiStok --> SimpanLog : Transaksi dan Detail Disimpan
-    SimpanLog --> CetakInvoice : Selesai (DB Commit)
-    CetakInvoice --> [*]
-```
+![Activity Diagram POS](pos_flow.png)
 
 ### c. Database Design (ERD)
 
-```mermaid
-erDiagram
-    USERS ||--o{ TRANSACTIONS : "processes"
-    USERS ||--o{ ACTIVITY_LOGS : "generates"
-    
-    TRANSACTIONS ||--|{ TRANSACTION_DETAILS : "contains"
-    ITEMS ||--o{ TRANSACTION_DETAILS : "recorded_in"
-    
-    USERS {
-        bigint id PK
-        string name
-        string email
-        string password
-        enum role "master, manager, karyawan"
-    }
-
-    ITEMS {
-        bigint id PK
-        string name
-        string sku
-        decimal purchase_price
-        decimal price
-        integer stock
-        string rack_primary
-        string rack_secondary
-    }
-
-    TRANSACTIONS {
-        bigint id PK
-        string invoice_number
-        foreignId cashier_id FK
-        decimal subtotal
-        decimal discount_amount
-        decimal total
-        decimal payment_amount
-        decimal change_amount
-        enum status
-    }
-
-    TRANSACTION_DETAILS {
-        bigint id PK
-        foreignId transaction_id FK
-        foreignId item_id FK
-        string item_name
-        decimal purchase_price
-        decimal unit_price
-        integer quantity
-    }
-
-    ACTIVITY_LOGS {
-        bigint id PK
-        foreignId user_id FK
-        string action
-        text description
-    }
-```
+![Database ERD](erd.png)
 
 ### d. High Fidelity UI Design
 *(Mohon paste screenshot High Fidelity UI / Figma Design / Screenshot aktual dari aplikasi CargoMind disini)*.
