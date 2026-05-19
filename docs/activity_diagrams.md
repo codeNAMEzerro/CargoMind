@@ -36,6 +36,9 @@ stateDiagram-v2
 ```
 
 ## 2. Authentication and Authorization Flow
+
+![Authentication Flow](auth_flow.png)
+
 Ensures that only authorized users can access specific parts of the system based on their assigned roles.
 
 ```mermaid
@@ -82,4 +85,6 @@ stateDiagram-v2
     
     ProcessUpdate --> Success: Update Complete
     Success --> TransactionHistory
+```
+
 ```
