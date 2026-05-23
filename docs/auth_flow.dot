@@ -1,0 +1,35 @@
+digraph G {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=ellipse, style=filled, fillcolor="#F5F5F5"]
+    edge [fontname="Helvetica,Arial,sans-serif"]
+    rankdir=TB;
+
+    start [shape=point, width=0.2];
+    end [shape=doublecircle, label="", width=0.2, fillcolor=black];
+
+    LoginPage [label="Login Page", shape=box];
+    AttemptLogin [label="Enter Credentials", shape=box];
+    VerifyCredentials [label="Verify Credentials", shape=diamond, fillcolor="#FFF9C4"];
+    LoginFailed [label="Login Failed", shape=box, fillcolor="#FFCDD2"];
+    
+    subgraph cluster_roles {
+        label = "Identify Role & Permissions";
+        style=dashed;
+        color=blue;
+        Karyawan [label="Role: Karyawan\n(POS & Inventory)", fillcolor="#E3F2FD"];
+        Manager [label="Role: Manager\n(Reports + POS)", fillcolor="#E3F2FD"];
+        Master [label="Role: Master\n(All + Settings)", fillcolor="#E3F2FD"];
+    }
+
+    start -> LoginPage;
+    LoginPage -> AttemptLogin;
+    AttemptLogin -> VerifyCredentials;
+    VerifyCredentials -> LoginFailed [label="Invalid"];
+    LoginFailed -> LoginPage;
+    VerifyCredentials -> Karyawan [label="Valid"];
+    VerifyCredentials -> Manager [label="Valid"];
+    VerifyCredentials -> Master [label="Valid"];
+    Karyawan -> end;
+    Manager -> end;
+    Master -> end;
+}

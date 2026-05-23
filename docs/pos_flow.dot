@@ -1,0 +1,40 @@
+digraph G {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=ellipse, style=filled, fillcolor="#F5F5F5"]
+    edge [fontname="Helvetica,Arial,sans-serif"]
+    rankdir=TB;
+
+    start [shape=point, width=0.2];
+    end [shape=doublecircle, label="", width=0.2, fillcolor=black];
+
+    OpenPOS [label="Open POS Page", shape=box];
+    InputItems [label="Input Items & Quantities", shape=box];
+    ValidateStock [label="Validate Stock", shape=diamond, fillcolor="#FFF9C4"];
+    StockError [label="Stock Insufficient", shape=box, fillcolor="#FFCDD2"];
+    CalculateTotal [label="Calculate Total", shape=box];
+    InputPayment [label="Input Payment & Discounts", shape=box];
+    
+    subgraph cluster_process {
+        label = "Process Transaction (Atomic)";
+        style=filled;
+        color="#E8F5E9";
+        fillcolor="#E8F5E9";
+        
+        UpdateStock [label="Update Stock", shape=box];
+        SaveTransaction [label="Save Transaction", shape=box];
+        SaveDetails [label="Save Line Items", shape=box];
+        LogActivity [label="Log Activity", shape=box];
+        
+        UpdateStock -> SaveTransaction -> SaveDetails -> LogActivity;
+    }
+
+    start -> OpenPOS;
+    OpenPOS -> InputItems;
+    InputItems -> ValidateStock;
+    ValidateStock -> StockError [label="No"];
+    StockError -> InputItems;
+    ValidateStock -> CalculateTotal [label="Yes"];
+    CalculateTotal -> InputPayment;
+    InputPayment -> UpdateStock;
+    LogActivity -> end [label="Complete"];
+}

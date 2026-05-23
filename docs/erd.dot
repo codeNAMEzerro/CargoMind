@@ -1,0 +1,110 @@
+digraph G {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=none]
+    edge [fontname="Helvetica,Arial,sans-serif"]
+    rankdir=LR;
+
+    // Users Table
+    users [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#B3E5FC"><b>users</b></td></tr>
+            <tr><td align="left">id (PK)</td></tr>
+            <tr><td align="left">name</td></tr>
+            <tr><td align="left">email (UK)</td></tr>
+            <tr><td align="left">password</td></tr>
+            <tr><td align="left">role (enum)</td></tr>
+            <tr><td align="left">email_verified_at</td></tr>
+            <tr><td align="left">remember_token</td></tr>
+            <tr><td align="left">timestamps</td></tr>
+        </table>
+    >];
+
+    // Items Table
+    items [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#C8E6C9"><b>items</b></td></tr>
+            <tr><td align="left">id (PK)</td></tr>
+            <tr><td align="left">name</td></tr>
+            <tr><td align="left">sku (UK)</td></tr>
+            <tr><td align="left">description</td></tr>
+            <tr><td align="left">price</td></tr>
+            <tr><td align="left">purchase_price</td></tr>
+            <tr><td align="left">stock</td></tr>
+            <tr><td align="left">rack_primary</td></tr>
+            <tr><td align="left">rack_secondary</td></tr>
+            <tr><td align="left">image</td></tr>
+            <tr><td align="left">is_active</td></tr>
+            <tr><td align="left">timestamps</td></tr>
+        </table>
+    >];
+
+    // Transactions Table
+    transactions [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#FFF9C4"><b>transactions</b></td></tr>
+            <tr><td align="left">id (PK)</td></tr>
+            <tr><td align="left">invoice_number (UK)</td></tr>
+            <tr><td align="left">cashier_id (FK)</td></tr>
+            <tr><td align="left">subtotal</td></tr>
+            <tr><td align="left">discount_amount</td></tr>
+            <tr><td align="left">discount_note</td></tr>
+            <tr><td align="left">total</td></tr>
+            <tr><td align="left">payment_amount</td></tr>
+            <tr><td align="left">change_amount</td></tr>
+            <tr><td align="left">status (enum)</td></tr>
+            <tr><td align="left">timestamps</td></tr>
+        </table>
+    >];
+
+    // Transaction Details Table
+    transaction_details [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#FFECB3"><b>transaction_details</b></td></tr>
+            <tr><td align="left">id (PK)</td></tr>
+            <tr><td align="left">transaction_id (FK)</td></tr>
+            <tr><td align="left">item_id (FK)</td></tr>
+            <tr><td align="left">item_name</td></tr>
+            <tr><td align="left">rack_location</td></tr>
+            <tr><td align="left">quantity</td></tr>
+            <tr><td align="left">unit_price</td></tr>
+            <tr><td align="left">purchase_price</td></tr>
+            <tr><td align="left">discount</td></tr>
+            <tr><td align="left">subtotal</td></tr>
+            <tr><td align="left">timestamps</td></tr>
+        </table>
+    >];
+
+    // Activity Logs Table
+    activity_logs [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#F5F5F5"><b>activity_logs</b></td></tr>
+            <tr><td align="left">id (PK)</td></tr>
+            <tr><td align="left">user_id (FK)</td></tr>
+            <tr><td align="left">action</td></tr>
+            <tr><td align="left">description</td></tr>
+            <tr><td align="left">ip_address</td></tr>
+            <tr><td align="left">model_type</td></tr>
+            <tr><td align="left">model_id</td></tr>
+            <tr><td align="left">timestamps</td></tr>
+        </table>
+    >];
+
+    // Settings Table
+    settings [label=<
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#E1BEE7"><b>settings</b></td></tr>
+            <tr><td align="left">id (PK)</td></tr>
+            <tr><td align="left">key (UK)</td></tr>
+            <tr><td align="left">value</td></tr>
+            <tr><td align="left">label</td></tr>
+            <tr><td align="left">type</td></tr>
+            <tr><td align="left">timestamps</td></tr>
+        </table>
+    >];
+
+    // Relationships
+    users -> transactions [label="1:N", arrowhead=crow];
+    users -> activity_logs [label="1:N", arrowhead=crow];
+    transactions -> transaction_details [label="1:N", arrowhead=crow];
+    items -> transaction_details [label="1:N", arrowhead=crow];
+}

@@ -1,0 +1,37 @@
+digraph G {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=ellipse, style=filled, fillcolor="#F5F5F5"]
+    edge [fontname="Helvetica,Arial,sans-serif"]
+    rankdir=TB;
+
+    start [shape=point, width=0.2];
+    end [shape=doublecircle, label="", width=0.2, fillcolor=black];
+
+    History [label="Transaction History", shape=box];
+    ToggleGod [label="Toggle God Mode", shape=box];
+    VerifyMaster [label="Verify Master Role", shape=diamond, fillcolor="#FFF9C4"];
+    EditForm [label="Edit Transaction Form", shape=box];
+    ModifyData [label="Modify Data", shape=box];
+    
+    subgraph cluster_update {
+        label = "Atomic Update & Reconciliation";
+        style=filled;
+        color="#E8F5E9";
+        fillcolor="#E8F5E9";
+        
+        StockDiff [label="Calculate Stock Difference"];
+        UpdateStock [label="Reconcile Item Stock"];
+        SaveRecords [label="Save Changes"];
+        
+        StockDiff -> UpdateStock -> SaveRecords;
+    }
+
+    start -> History;
+    History -> ToggleGod;
+    ToggleGod -> VerifyMaster;
+    VerifyMaster -> EditForm [label="Authorized"];
+    VerifyMaster -> History [label="Denied", color=red];
+    EditForm -> ModifyData;
+    ModifyData -> StockDiff;
+    SaveRecords -> end [label="Success"];
+}
