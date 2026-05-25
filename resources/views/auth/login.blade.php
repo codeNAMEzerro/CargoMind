@@ -15,7 +15,7 @@
         <div class="login-card">
             <div class="login-logo"><i class="ri-box-3-fill"></i></div>
             <h1 class="login-title">CargoMind</h1>
-            <p class="login-subtitle">Sistem Manajemen Toko & Gudang</p>
+            <p class="login-subtitle">Sistem Manajemen Toko dan Gudang</p>
 
             @if($errors->any())
             <div class="alert alert-error mb-2" style="text-align:left;">
